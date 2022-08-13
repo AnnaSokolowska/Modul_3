@@ -30,7 +30,7 @@ let timerId = setTimeout(function tick() {
   } else if (count < 15) {
     setTimeout(tick, 1000);
   }
-}); // после 15 прекратит выволнять
+}); // после 15 прекратит выполнять
 
 const timer = deadline => {
   const timerBlockHour = document.querySelector('.timer__block_hour');
