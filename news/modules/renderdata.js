@@ -1,6 +1,7 @@
 import renderNews from './renderNews.js';
 import fetchRequest from './fetch.js';
 import newFetchRequest from './newFetch.js';
+import renderSearch from './renderSearch.js';
 
 
 const newsListTop = document.querySelector('.news-list-top');
@@ -20,30 +21,9 @@ display: grid;
 
 const input = document.querySelector('.search-input');
 
-const form = document.querySelector('.search-submit');
-const select = document.querySelector('.js-choice');
+const form = document.querySelector('.form-search');
 const spanSearch = document.querySelector('.search');
 const searchText = document.querySelector('.news-result');
-
-
-input.addEventListener('change', () => {
-  const infoSearch = input.value;
-
-  searchText.style.visibility = 'visible';
-  spanSearch.textContent = `${infoSearch}`;
-
-  const init = () => Promise.all([newFetchRequest(`${infoSearch}`, {
-    headers: {
-      'X-Api-Key': '1bf9ae021bd04e2a8ad215ec671457ca',
-    },
-    callback: renderNews}),
-  ]);
-
-  init().then(data => {
-    console.log(data);
-    newsListSearch.append(...data);
-  });
-});
 
 
 const init = () => Promise.all([fetchRequest(URL, {
@@ -56,3 +36,31 @@ const init = () => Promise.all([fetchRequest(URL, {
 init().then(data => {
   newsListTop.append(...data);
 });
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const infoSearch = input.value;
+  searchText.style.visibility = 'visible';
+  spanSearch.textContent = `${infoSearch}`;
+  while (newsListTop.firstChild) {
+    newsListTop.removeChild(newsListTop.firstChild);
+  }
+
+  const initSearch = () => Promise.all([fetchRequest(URL, {
+    headers: {
+      'X-Api-Key': '1bf9ae021bd04e2a8ad215ec671457ca',
+    },
+    callback: renderSearch}),
+  newFetchRequest(`${input.value}`, {
+    headers: {
+      'X-Api-Key': '1bf9ae021bd04e2a8ad215ec671457ca',
+    },
+    callback: renderNews}),
+  ]);
+
+  initSearch().then(data => {
+    newsListSearch.append(data[1]);
+    newsListTop.append(data[0]);
+  });
+});
+

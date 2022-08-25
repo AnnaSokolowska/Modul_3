@@ -1,5 +1,6 @@
 
-const renderNews = (err, data) => {
+
+const renderSearch = (err, data) => {
   if (err) {
     console.log(err, data);
     return;
@@ -68,11 +69,11 @@ const renderNews = (err, data) => {
     newsLi.append(image, title, description, footer);
     return newsLi;
   });
-  for (let a = 0; a < 8; a++) {
+  for (let a = 0; a < 4; a++) {
     template.append(news[a]);
   }
   return template;
 };
 
 
-export default renderNews;
+export default renderSearch;
