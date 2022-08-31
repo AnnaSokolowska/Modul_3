@@ -1,0 +1,11 @@
+{
+  "name": "credit_card-1lvl",
+  "version": "1.0.0",
+
+  "scripts": {},
+  "author": "Anna Sokolowska",
+
+  "dependencies": {
+    "redom": "^3.29.0"
+  }
+}
