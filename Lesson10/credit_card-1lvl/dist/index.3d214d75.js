@@ -532,7 +532,9 @@ function hmrAcceptRun(bundle, id) {
 }
 
 },{}],"bB7Pu":[function(require,module,exports) {
+"use strict";
 var _redom = require("redom");
+var _validate = require("./validate.js");
 const createDiv = ()=>{
     const body = (0, _redom.el)("div", {
         "class": "wrapper"
@@ -588,23 +590,25 @@ const createDiv = ()=>{
         type: "text",
         maxLength: "3"
     })), (0, _redom.el)("button", {
-        class: "form__button"
-    }, "CHECK OUT"))));
+        class: "form__button",
+        type: "submit"
+    }, "CHECK OUT"), (0, _redom.el)("h2", {
+        class: "form__title"
+    }))));
     return body;
 };
 const creditCeardMask = ()=>{
     const cardNumberInput = document.getElementById("cardNumber");
     const cardNumberOutput = document.querySelector(".card__number");
     cardNumberInput.addEventListener("mouseenter", ()=>{
-        cardNumberInput.value = `${cardNumberOutput.textContent}`;
+    // cardNumberInput.value = `${cardNumberOutput.textContent}`;
     });
-    cardNumberInput.addEventListener("mouseleave", ()=>{
-        cardNumberInput.value = "";
-    });
-    cardNumberInput.addEventListener("input", ()=>{
-        let cardCode = cardNumberInput.value.replace(/[^\d]/g, "").substring(0, 16);
-        cardCode = cardCode !== "" ? cardCode.match(/.{1,4}/g).join(" ") : "";
-        cardNumberInput.value = cardCode;
+    /*cardNumberInput.addEventListener('mouseleave', () => {
+    cardNumberInput.value = '';
+  });*/ cardNumberInput.addEventListener("input", ()=>{
+        // let cardCode = cardNumberInput.value.replace(/[^\d]/g, '').substring(0, 16);
+        //  cardCode = cardCode !== '' ? cardCode.match(/.{1,4}/g).join(' ') : '';
+        // cardNumberInput.value = cardCode;
         // form.number.value = cardNumberInput.value.split(' ').join('');
         cardNumberOutput.textContent = cardNumberInput.value;
     });
@@ -626,12 +630,36 @@ const expiredDate = ()=>{
         outputExpireDate.textContent = inputExpireDate.value;
     });
 };
+const checkValidation = ()=>{
+    const button = document.querySelector(".form__button");
+    const h2 = document.querySelector(".form__title");
+    button.addEventListener("click", (e)=>{
+        e.preventDefault();
+        const cardNumberInput = document.getElementById("cardNumber").value;
+        const cvv = document.querySelector(".input__cvv").value;
+        const cardHolderInput = document.querySelector(".input__holder").value;
+        const card = (0, _validate.cardHolderValidate)(cardHolderInput);
+        const cvvNumber = (0, _validate.cvvValidation)(cvv);
+        const cardNumber = (0, _validate.numberValidation)(cardNumberInput);
+        console.log(card);
+        const promise = new Promise((resolve)=>{
+            if (card === "Данные введены не верно" || cvvNumber === "Номер введен не верно" || cardNumber === "Номер введен не верно") h2.textContent = "Данные кредитной карты не валидны";
+            else h2.textContent = "Данные кредитной карты валидны";
+            setTimeout(()=>{
+                resolve();
+                h2.textContent = "";
+            }, 2000);
+        });
+        promise();
+    });
+};
 (0, _redom.setChildren)(document.body, createDiv());
 creditCeardMask();
 cardHolder();
 expiredDate();
+checkValidation();
 
-},{"redom":"iahd6"}],"iahd6":[function(require,module,exports) {
+},{"redom":"iahd6","./validate.js":"cYYWK"}],"iahd6":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "List", ()=>List);
@@ -1137,6 +1165,40 @@ exports.export = function(dest, destName, get) {
         get: get
     });
 };
+
+},{}],"cYYWK":[function(require,module,exports) {
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.numberValidation = exports.cvvValidation = exports.cardHolderValidate = void 0;
+const cardHolderValidate = (cardHolderInput)=>{
+    cardHolderInput.toString();
+    const regExpCardHolder = /^(?:[A-Z]+\s)(?:[A-Z]+)$/iu;
+    const res = cardHolderInput.match(regExpCardHolder);
+    if (res === null) return "Данные введены не верно";
+    console.log(res);
+    return res[0];
+};
+exports.cardHolderValidate = cardHolderValidate;
+const cvvValidation = (cvv)=>{
+    cvv.toString();
+    const regExpCvv = /^[0-9]{3}$/g;
+    const res = cvv.match(regExpCvv);
+    if (res === null) return "Номер введен не верно";
+    console.log(res);
+    return res[0];
+};
+exports.cvvValidation = cvvValidation;
+const numberValidation = (cardNumberInput)=>{
+    const number = cardNumberInput.toString().split(" ").join("");
+    const regExpNumber = /^[0-9]{16}$/g;
+    const res = number.match(regExpNumber);
+    if (res === null) return "Номер введен не верно";
+    console.log(res);
+    return res[0];
+};
+exports.numberValidation = numberValidation;
 
 },{}]},["fAQZl","bB7Pu"], "bB7Pu", "parcelRequire7921")
 

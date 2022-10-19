@@ -1,4 +1,5 @@
 import {el, setChildren} from 'redom';
+import {cvvValidation, cardHolderValidate, numberValidation} from './validate.js';
 
 
 const createDiv = () => {
@@ -27,7 +28,8 @@ const createDiv = () => {
           el('label', {class: 'form__label form__cvv-label', for: ''}, 'CVV'),
           el('input',
             {class: 'input input__cvv', type: 'text', maxLength: '3'})),
-        el('button', {class: 'form__button'}, 'CHECK OUT'))));
+        el('button', {class: 'form__button', type: 'submit'}, 'CHECK OUT'),
+        el('h2', {class: 'form__title'}))));
 
 
   return body;
@@ -39,16 +41,17 @@ const creditCeardMask = () => {
   const cardNumberOutput = document.querySelector('.card__number');
 
   cardNumberInput.addEventListener('mouseenter', () => {
-    cardNumberInput.value = `${cardNumberOutput.textContent}`;
+    // cardNumberInput.value = `${cardNumberOutput.textContent}`;
   });
-  cardNumberInput.addEventListener('mouseleave', () => {
+  /*cardNumberInput.addEventListener('mouseleave', () => {
     cardNumberInput.value = '';
-  });
+  });*/
+
 
   cardNumberInput.addEventListener('input', () => {
-    let cardCode = cardNumberInput.value.replace(/[^\d]/g, '').substring(0, 16);
-    cardCode = cardCode !== '' ? cardCode.match(/.{1,4}/g).join(' ') : '';
-    cardNumberInput.value = cardCode;
+// let cardCode = cardNumberInput.value.replace(/[^\d]/g, '').substring(0, 16);
+  //  cardCode = cardCode !== '' ? cardCode.match(/.{1,4}/g).join(' ') : '';
+    // cardNumberInput.value = cardCode;
     // form.number.value = cardNumberInput.value.split(' ').join('');
     cardNumberOutput.textContent = cardNumberInput.value;
   });
@@ -73,8 +76,41 @@ const expiredDate = () => {
   });
 };
 
+
+const checkValidation = () => {
+  const button = document.querySelector('.form__button');
+  const h2 = document.querySelector('.form__title');
+  button.addEventListener('click', e => {
+    e.preventDefault();
+    const cardNumberInput = document.getElementById('cardNumber').value;
+    const cvv = document.querySelector('.input__cvv').value;
+    const cardHolderInput = document.querySelector('.input__holder').value;
+    const card = cardHolderValidate(cardHolderInput);
+    const cvvNumber = cvvValidation(cvv);
+    const cardNumber = numberValidation(cardNumberInput);
+    console.log(card);
+    const promise = new Promise((resolve) => {
+      if (card === 'Данные введены не верно' ||
+      cvvNumber === 'Номер введен не верно' ||
+      cardNumber === 'Номер введен не верно') {
+        h2.textContent = 'Данные кредитной карты не валидны';
+      } else {
+        h2.textContent = 'Данные кредитной карты валидны';
+      }
+
+      setTimeout(() => {
+        resolve();
+        h2.textContent = '';
+      }, 2000);
+    });
+    promise();
+  });
+};
+
+
 setChildren(document.body, createDiv());
 creditCeardMask();
 cardHolder();
 expiredDate();
+checkValidation();
 
